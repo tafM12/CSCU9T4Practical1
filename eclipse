@@ -1,0 +1,572 @@
+// GUI and main program for the Training Record
+// 2925169
+package com.stir.cscu9t4practical1;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import javax.swing.*;
+
+import com.stir.cscu9t4practical1.Activitys.*;
+
+
+import java.lang.Number;
+
+public class TrainingRecordGUI extends JFrame implements ActionListener {
+
+    private JTextField name = new JTextField(30);
+    private JTextField day = new JTextField(2);
+    private JTextField month = new JTextField(2);
+    private JTextField year = new JTextField(4);
+    private JTextField hours = new JTextField(2);
+    private JTextField mins = new JTextField(2);
+    private JTextField secs = new JTextField(2);
+    private JTextField dist = new JTextField(4);
+    private JTextField activ = new JTextField(4);
+    private JLabel actLabel = new JLabel("Activity");
+    private JLabel labn = new JLabel(" Name:");
+    private JLabel labd = new JLabel(" Day:");
+    private JLabel labm = new JLabel(" Month:");
+    private JLabel laby = new JLabel(" Year:");
+    private JLabel labh = new JLabel(" Hours:");
+    private JLabel labmm = new JLabel(" Mins:");
+    private JLabel labs = new JLabel(" Secs:");
+    private JLabel labdist = new JLabel(" Distance (km):");
+    private JLabel removeL = new JLabel("Remove");
+    private JButton addR = new JButton("Add");
+    private JButton lookUpByDate = new JButton("Look Up");
+    private JButton FindAll = new JButton("Find All by Date");
+    private JButton RemoveB = new JButton("Remove entry");
+
+    private TrainingRecord myAthletes = new TrainingRecord();
+
+    private JTextArea outputArea = new JTextArea(5, 50);
+
+    public static void main(String[] args) {
+        TrainingRecordGUI applic = new TrainingRecordGUI();
+    } // main
+
+    // set up the GUI 
+    public TrainingRecordGUI() {
+        super("Training Record");
+        setLayout(new FlowLayout());
+        add(labn);
+        add(name);
+        name.setEditable(true);
+        add(actLabel);
+        add(activ);
+        activ.setEditable(true);
+        add(labd);
+        add(day);
+        day.setEditable(true);
+        add(labm);
+        add(month);
+        month.setEditable(true);
+        add(laby);
+        add(year);
+        year.setEditable(true);
+        add(labh);
+        add(hours);
+        hours.setEditable(true);
+        add(labmm);
+        add(mins);
+        mins.setEditable(true);
+        add(labs);
+        add(secs);
+        secs.setEditable(true);
+        add(labdist);
+        add(dist);
+        dist.setEditable(true);
+        add(addR);
+        addR.addActionListener(this);
+        add(lookUpByDate);
+        lookUpByDate.addActionListener(this);
+        add(FindAll);
+        FindAll.addActionListener(this);
+        add(removeL);
+        add(RemoveB);
+        RemoveB.addActionListener(this);
+        add(outputArea);
+        outputArea.setEditable(false);
+        setSize(720, 200);
+        setVisible(true);
+        blankDisplay();
+
+        // To save typing in new entries while testing, uncomment
+        // the following lines (or add your own test cases)
+        
+    } // constructor
+
+    // listen for and respond to GUI events 
+    public void actionPerformed(ActionEvent event) {
+        String message = "";
+        if (event.getSource() == addR) {
+            message = addEntry("generic");
+        }
+        if (event.getSource() == lookUpByDate) {
+            message = lookupEntry();
+        }
+        if (event.getSource() == FindAll)
+        { 
+        	message = findAll().toString();
+        }
+        if (event.getSource() == RemoveB)
+        {
+        	removeEntry();
+        }
+        outputArea.setText(message);
+        blankDisplay();
+    } // actionPerformed
+
+    public String addEntry(String what) {
+        String message = "Record added\n";
+        System.out.println("Adding "+what+" entry to the records");
+        String n = name.getText();
+        int m = Integer.parseInt(month.getText());
+        int d = Integer.parseInt(day.getText());
+        int y = Integer.parseInt(year.getText());
+        float km = java.lang.Float.parseFloat(dist.getText());
+        int h = Integer.parseInt(hours.getText());
+        int mm = Integer.parseInt(mins.getText());
+        int s = Integer.parseInt(secs.getText());
+        String a = activ.getText();
+         String ran = "Run";
+         String Cyc = "Cycle";
+         String swam = "Swim";
+        		 
+        if(a.equals(ran))
+        {
+            Run run = new Run(n, a, km);	
+            Entry e = new Entry(n, run, d, m, y, h, mm, s, km);
+            if(myAthletes.alreadyEntered(e) == false)
+            {
+                 myAthletes.addEntry(e);
+            	 message = "New record added";
+            }
+            else
+            {
+            	message = "please enter a unique value";
+            }
+            
+        }
+        if(a.equals(Cyc))
+        {
+            Cycle cycle = new Cycle(n, a, km);	
+            Entry e = new Entry(n, cycle, d, m, y, h, mm, s, km);
+            if(myAthletes.alreadyEntered(e) == false)
+            {
+                 myAthletes.addEntry(e);
+            	 message = "New record added";
+            }
+            else
+            {
+            	message = "please enter a unique value";
+            }
+            
+        }
+        if(a.equals(swam))
+        {
+            Swim swim = new Swim(n, a, km);	
+            Entry e = new Entry(n, swim, d, m, y, h, mm, s, km);
+            if(myAthletes.alreadyEntered(e) == false)
+            {
+                 myAthletes.addEntry(e);
+            	 message = "New record added";
+            }
+            else
+            {
+            	message = "please enter a unique value";
+            }
+        }
+        
+      
+        blankDisplay();
+        return message;
+    }
+    
+    public String lookupEntry() {
+        int m = Integer.parseInt(month.getText());
+        int d = Integer.parseInt(day.getText());
+        int y = Integer.parseInt(year.getText());
+        outputArea.setText("looking up record ...");
+        String message = myAthletes.lookupEntry(d, m, y);
+        return message;
+    }
+    
+    public void removeEntry() {
+    	 int m = Integer.parseInt(month.getText());
+         int d = Integer.parseInt(day.getText());
+         int y = Integer.parseInt(year.getText());
+         myAthletes.removeEntry(d, m, y);
+    	
+    }
+    
+    public StringBuffer findAll()
+    {   
+    	StringBuffer message = new StringBuffer();
+    	int m = Integer.parseInt(month.getText());
+        int d = Integer.parseInt(day.getText());
+        int y = Integer.parseInt(year.getText());
+    	message = myAthletes.FindAllByDate(d, m, y);
+		return message;
+    	
+    }
+
+    public void blankDisplay() {
+        name.setText("");
+        activ.setText("");
+        day.setText("");
+        month.setText("");
+        year.setText("");
+        hours.setText("");
+        mins.setText("");
+        secs.setText("");
+        dist.setText("");
+
+    }// blankDisplay
+    // Fills the input fields on the display for testing purposes only
+    public void fillDisplay(Entry ent) {
+        name.setText(ent.getName());
+        day.setText(String.valueOf(ent.getDay()));
+        month.setText(String.valueOf(ent.getMonth()));
+        year.setText(String.valueOf(ent.getYear()));
+        hours.setText(String.valueOf(ent.getHour()));
+        mins.setText(String.valueOf(ent.getMin()));
+        secs.setText(String.valueOf(ent.getSec()));
+        dist.setText(String.valueOf(ent.getDistance()));
+    }
+
+} // TrainingRecordGUI
+
+
+
+
+
+
+
+
+// An implementation of a Training Record as an ArrayList
+package com.stir.cscu9t4practical1;
+
+
+
+
+import java.util.*;
+
+
+public class TrainingRecord {
+    private List<Entry> tr;
+    
+    public TrainingRecord() {
+        tr = new ArrayList<Entry>();
+    } //constructor
+  
+    /*
+     * Puts all entrys with matching dates into a string buffer which goes back 
+     * to a normal string and sends out this stroing sa message
+     */
+    
+    public StringBuffer FindAllByDate (int d, int m, int y)
+    {
+    	StringBuffer output = new StringBuffer("");
+	   ListIterator<Entry> iter = tr.listIterator();
+       String result = "";
+	   if(iter.hasNext()  == false)
+       {
+       	 output.append("No entries found");
+       }
+	    
+      while (iter.hasNext()) {
+         Entry current = iter.next();
+         if (current.getDay()==d && current.getMonth()==m && current.getYear()==y) 
+            result = current.getEntry();
+             output.append(result);
+           }
+          
+           return output;
+  }
+    
+    
+    // add a record to the list
+   public void addEntry(Entry e){
+       tr.add(e);    
+   } // addClass
+   
+   // look up the entry of a given day and month
+   public String lookupEntry (int d, int m, int y) {
+	   StringBuffer output = new StringBuffer("");
+	   ListIterator<Entry> iter = tr.listIterator();
+        String result = "";
+	   if(iter.hasNext()  == false)
+        {
+        	  result = "No entries found";
+        }
+	    
+       while (iter.hasNext()) {
+          Entry current = iter.next();
+          if (current.getDay()==d && current.getMonth()==m && current.getYear()==y) 
+             result = current.getEntry();
+              output.append(result);
+            }
+            result = output.toString();
+      
+            return result;
+   } // lookupEntry
+   public void removeEntry(int d, int m, int y)
+   {
+	   ListIterator<Entry> iter = tr.listIterator();
+	   while (iter.hasNext()) {
+	          Entry current = iter.next();
+	          if (current.getDay()==d && current.getMonth()==m && current.getYear()==y) 
+	          {
+	        	  tr.remove(current);
+	          }
+	          }
+      
+   }
+   // Count the number of entries
+   public int getNumberOfEntries(){
+       return tr.size();
+   }
+   // Clear all entries
+   public void clearAllEntries(){
+       tr.clear();
+   }
+   /*
+    *  returns a boolean value tru or false depending if the value entered 
+    *  perfectly matches any valu iterated in the list of records
+    */
+
+   public boolean alreadyEntered(Entry entry){
+       boolean value = false;
+       ListIterator<Entry> list = tr.listIterator();
+      
+       while (list.hasNext()) {
+          
+    	   Entry latest = list.next();
+          
+           if (latest.getName().equalsIgnoreCase(entry.getName()) &&
+        		   latest.getActivity().equals(latest.getActivity()) &&
+        		   latest.getDay()==entry.getDay()
+                   && latest.getMonth()==entry.getMonth() && 
+                   latest.getYear()==entry.getYear()){
+                     value = true;
+               }
+       }
+       return value;
+   }
+   
+
+
+
+
+
+// This class holds information about a single training session
+package com.stir.cscu9t4practical1;
+
+import java.util.Calendar;
+public class Entry {
+  private String name;
+  private Calendar dateAndTime;
+  private float distance;
+  private Activitys activity;
+  
+  public Entry (String n, Activitys activity, int d, int m, int y, int h, int min, int s, float dist) {
+    name = n;
+    Calendar inst = Calendar.getInstance();
+    inst.set(y,m-1,d,h,min,s);
+    dateAndTime = inst;
+    distance = dist;
+    this.setActivity(activity);
+  } //constructor
+  
+  public String getName () {
+    return name;
+  } //getName
+ 
+  public int getDay () {
+    return dateAndTime.get(Calendar.DATE);
+  } //getDay
+  
+  public int getMonth () {
+    int month =  dateAndTime.get(Calendar.MONTH) + 1;
+    return month;
+  } //getMonth
+  
+  public int getYear () {
+    return dateAndTime.get(Calendar.YEAR);
+  } //getYear
+
+  public int getHour () {
+    return dateAndTime.get(Calendar.HOUR);
+  } //getHour
+
+  public int getMin () {
+    return dateAndTime.get(Calendar.MINUTE);
+  } //getMin
+
+  public int getSec () {
+    return dateAndTime.get(Calendar.SECOND);
+  } //getSec
+
+  public float getDistance () {
+    return distance;
+  } //getYear
+
+  public String getEntry () {
+   String result = getName() + activity.getActionOut() + " " + getDistance() + " km in "
+             +getHour()+":"+getMin()+":"+ getSec() + " on "
+             +getDay()+"/"+getMonth()+"/"+getYear()+"\n";
+   return result;
+  } //getEntry
+
+  
+public Activitys getActivity() {
+	return activity;
+}
+
+public void setActivity(Activitys activity) {
+	this.activity = activity;
+}
+   
+} // Entry
+
+
+
+
+
+
+
+package com.stir.cscu9t4practical1;
+
+public class Activitys {
+ protected String name;
+ private String training;
+ 
+public Activitys(String name, String training) {
+	this.setName(name);
+	this.setTraining(training);
+}
+
+public String getActionOut()
+{             
+	String actionOut  = " was able to " + training;
+	return actionOut;
+}
+
+public String getName() {
+	return name;
+}
+
+public void setName(String name) {
+	this.name = name;
+}
+
+public String getTraining() {
+	return training;
+}
+
+public void setTraining(String training) {
+	this.training = training;
+}
+
+
+}
+
+
+
+
+
+package com.stir.cscu9t4practical1;
+
+ 
+	public class Run extends Activitys{
+		 
+		private float distance;
+		public Run(String name, String training, float distance) {
+			super(name, training);
+		     
+			
+			
+		}
+        
+		public String getActionOut()
+		{             
+			String actionOut  = " was able to run:";
+			return actionOut;
+		}
+
+		public float getDistance() {
+			return distance;
+		}
+
+		public void setDistance(float distance) {
+			this.distance = distance;
+		}
+		
+
+	}
+
+
+
+
+
+
+package com.stir.cscu9t4practical1;
+
+
+	public class Cycle extends Activitys{
+		 
+		private float distance;
+		public Cycle(String name, String training, float distance) {
+			super(name, training);
+		     
+			
+			
+		}
+        
+
+
+
+	}
+
+
+
+
+
+
+
+
+package com.stir.cscu9t4practical1;
+
+public class Swim extends Activitys{
+	 
+	private float distance;
+	public Swim(String name, String training, float distance) {
+		super(name, training);
+	     
+	
+		
+	}
+    
+	public String getActionOut()
+	{            
+		String actionOut  = " was able to swim:";
+		return actionOut;
+	}
+
+	public float getDistance() {
+		return distance;
+	}
+
+	public void setDistance(float distance) {
+		this.distance = distance;
+	}
+
+}
+
+
+
+
+
+
